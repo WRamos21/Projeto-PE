@@ -8,6 +8,6 @@ int main (void) {
     scanf("%d", &b);
 
     printf("%d", add(a, b));
-
+printf("pinto");
     return 0;
 }
