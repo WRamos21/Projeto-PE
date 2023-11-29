@@ -4,12 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int validateBigNumber(BigNumber a) {
-    for (int i = 0; i < a->size; i++) {
-        if (a->elements[i] == '\0') continue;
-        if (a->elements[i] == '\n') continue;
+int validateBigNumber(char *elements) {
+    int size = strlen(elements);
+    for (int i = 0; i < size; i++) {
+        if (elements[i] == '\0') continue;
+        if (elements[i] == '\n') continue;
 
-        if ((a->elements[i] < 48 || a->elements[i] > 57) && a->elements[i] != 45) {
+        if ((elements[i] < 48 || elements[i] > 57) && elements[i] != 45) {
 
             return 0;
         }
@@ -18,11 +19,24 @@ int validateBigNumber(BigNumber a) {
     return 1;
 }
 
-void reverse(BigNumber a) {
-    for (int i = a->elements[0] == '-' ? 1 : 0; i < a->size / 2; i++) {
-        if (a->elements[i] == '\0') continue;
+void copyElementsToBigNumber(BigNumber a, char *elements) {
+    printf("%u", a->size);
+    for (int i = 0; i < a->size; i++) {
+        if (elements[i] == '-') continue;
 
-        char temp = a->elements[i];
+        if (a->isNegative) {
+            a->elements[i - 1] = elements[i] - '0';
+            printf("%d", a->elements[i-1]);
+        } else {
+            a->elements[i] = elements[i] - '0';
+            printf("%d", a->elements[i]);
+        }
+    }
+}
+
+void reverseBigNumber(BigNumber a) {
+    for (int i = 0; i < a->size / 2; i++) {
+        int temp = a->elements[i];
         a->elements[i] = a->elements[a->size - i - 1];
         a->elements[a->size - i - 1] = temp;
     }
@@ -30,9 +44,9 @@ void reverse(BigNumber a) {
 
 BigNumber getBigNumber() {
     BigNumber a = malloc(sizeof(BigNumber));
-    a->elements = malloc(MAX_SIZE * sizeof(char));
+    char *elements = malloc(MAX_SIZE);
 
-    if (a == NULL || a->elements == NULL) {
+    if (a == NULL || elements == NULL) {
         printf("Erro: Limite de memoria excedido!");
         exit(1);
     }
@@ -41,21 +55,39 @@ BigNumber getBigNumber() {
         printf("Digite o numero:\n");
         printf("Exemplo de formatacao - positivo: 54658\n");
         printf("Exemplo de formatacao - negativo: -145793\n");
-        fgets(a->elements, MAX_SIZE, stdin);
-        a->size = strlen(a->elements);
-        if (!validateBigNumber(a)) {
+        fgets(elements, MAX_SIZE, stdin);
+        printf("%u\n", strlen(elements));
+        if (!validateBigNumber(elements)) {
             system("cls");
-            printf("Digite um numero nos formatos validos...\n");
+            printf("***Digite um numero nos formatos validos...***\n");
         }
-    } while (!validateBigNumber(a));
+    } while (!validateBigNumber(elements));
 
-    reverse(a);
+    a->size = strlen(elements) - 1;
+    if (elements[a->size - 1] == '\n') {
+        a->size = a->size - 1;
+    }
+    elements = realloc(elements, strlen(elements) * sizeof(char));
+    a->elements = calloc(a->size, sizeof(int));
+    if (a->elements == NULL) {
+        printf("Erro: Limite de memoria excedido!");
+        exit(1);
+    }
+    if (elements[0] == '-') a->isNegative = 1;
 
+    copyElementsToBigNumber(a, elements);
+    free(elements);
+
+    reverseBigNumber(a);
+
+    system("cls");
     return a;
 }
 
 void printBigNumber(BigNumber a) {
+    reverseBigNumber(a);
     for (int i = 0; i < a->size; i++) {
-        printf("%c", a->elements[i]);
+        printf("%d", a->elements[i]);
     }
+    reverseBigNumber(a);
 }
