@@ -5,12 +5,17 @@
 #define MAX_SIZE __SIZE_MAX__ / 5
 
 typedef struct {
-    char *elements;
-    int size;
+    int *elements;
+    unsigned isNegative;
+    unsigned int size;
 } *BigNumber;
 
 BigNumber getBigNumber();
 
 void printBigNumber(BigNumber a);
+
+void destroyBigNumber(BigNumber a);
+
+void sumBigNumber(BigNumber a, BigNumber c);
 
 #endif
