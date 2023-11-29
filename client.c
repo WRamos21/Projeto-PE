@@ -55,6 +55,5 @@ int main(void) {
         } while(operation != '+' && operation != '-' && operation != '*');
         system("cls");
     }
-
     return 0;
 }
